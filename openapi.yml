@@ -1,0 +1,130 @@
+openapi: 3.0.3
+
+info:
+  title: Метод блокировки корпоративной карты
+  version: 0.0.1
+
+servers:
+- url: https://bank.ru/api/v1
+  description: Базовый URL 
+
+tags:
+- name: Corporation-card
+  description: Методы управления корпоративными картами
+
+paths:
+  /cards/{cardId}/block:
+    post: 
+      tags:
+        - Corporation-card
+      summary: Метод блокировки корпоративной карты
+      operationId: blockCorporationCard
+      parameters: 
+        - name: cardId
+          in: path
+          description: ID корпоративной карты
+          required: true
+          schema:             
+            type: string 
+            format: uuid 
+            example: "1eb283ce-a516-4457-82e3-514a4e77b36f"
+      requestBody:
+        required: true
+        content: 
+          application/json: 
+            schema: 
+              type: object
+              required: 
+                - blockType
+                - reasonCode
+              properties: 
+                blockType:
+                  description: Тип блокировки
+                  type: string 
+                  enum:
+                    - TEMPORARY
+                    - PERMANENT
+                  example: "TEMPORARY"
+                reasonCode:
+                  type: string 
+                  description: Причина блокировки
+                  enum:
+                    - LOST
+                    - STOLEN
+                    - FRAUD_SUSPECTED
+                    - OTHER
+                  example: "STOLEN"
+                comment:
+                  type: string 
+                  description: Комментарий клиента
+                  maxLength: 255
+
+      responses:
+        '200':
+          description: Success
+          content: 
+            application/json: 
+              schema: 
+                type: object
+                required: 
+                  - cardId
+                  - status
+                  - blockedAt
+                properties: 
+                  cardId:
+                    type: string 
+                    description: ID карты
+                    format: uuid 
+                    example: "1eb283ce-a516-4457-82e3-514a4e77b36f"
+                  status:
+                    type: string 
+                    description: Статус карты
+                    enum:
+                      - BLOCKED
+                      - UNBLOKED
+                    example: "BLOCKED"
+                  blockedAt:
+                    description: Дата блокировки карты 
+                    type: string 
+                    format: date-time 
+                    example: "2026-02-23T10:15:30Z"
+
+        '400':
+          description: Bad Request 
+          content: 
+            application/json: 
+              schema: 
+                type: object
+                required: 
+                  - message 
+                properties: 
+                  message:
+                    type: string                     
+                    default: Некорректные данные 
+
+        '404':
+          description: Not Found
+          content: 
+            application/json: 
+              schema: 
+                type: object
+                required: 
+                  - message 
+                properties: 
+                  message:
+                    type: string 
+                    default: Карта не найдена               
+        
+        '409':
+          description: Conflict
+          content: 
+            application/json: 
+              schema: 
+                type: object
+                required: 
+                  - message 
+                properties: 
+                  message:
+                    type: string 
+                    default: Карта уже заблокирована   
+        
