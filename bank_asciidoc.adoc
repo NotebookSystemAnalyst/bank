@@ -1,0 +1,141 @@
+= Содержание страницы
+:toc:
+:toc-title: 
+:toclevels: 3
+:sectnums:
+
+
+== Описание метода
+Метод предназначен для создания ресурса _test_
+
+== Входные параметры
+|===
+
+| *Параметр* | *Описание* | *Способ передачи* | *Тип* | *Обязательность* | *Пример* | *Комментарий*
+
+|Content-Type
+|Тип контента
+|header
+|string
+|true
+|application/json
+|-
+
+|Authorization
+|Токен аутентификации
+|header
+|string
+|true
+|Bearer sadfdsafzxcvq21321dsa
+|-
+
+|testString
+|Атрибут типа строка
+|body
+|string
+|true
+|"Привет"
+|-
+
+|testBoolean
+|Атрибут типа boolean
+|body
+|boolean
+|false
+|true
+|-
+
+|testNumber
+|Атриут типа число
+|body
+|number
+|true
+|123
+|-
+
+|testArray
+|Атрибут типа массив
+|body
+|array
+|false
+|[]
+|-
+
+|testObject
+|Атрибут типа объект
+|body
+|object
+|false
+|{}
+|-
+
+|===
+
+== Алгоритм работы метода
+. Метод получает на вход токен аутентификации.
+. Проверяет его валидность.
+** 2.1 Если токен не валиден, возвращается ответ 403.
+** 2.2 Если токен валиден, то происходит проверка на наличие обязательных атрибутов.
+. Если хотя бы один обязательный атрибут не найден, возвращается ответ 400.
+. Если все обязательные атрибуты указаны, то происходит создание нового ресурса с параметрами, переданными в теле запроса.
+
+== Возможные ошибки
+|===
+
+| *Код ошибки* | *Текст ошибки* | *Причина*
+
+|400
+|bad request
+|Не переданы обязательные атрибуты запроса
+
+|400
+|unauthorized
+|Пользователь не авторизован или у токена истек срок действия
+
+|===
+
+== Пример запроса
+
+[source,bash]
+----
+curl --location --request POST /ru-external-api/client-fast-check' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer sadfdsafzxcvq21321dsa' \
+--data-raw '
+{
+    "testString": "some test",
+    "testBoolean": true,
+    "testNumber": 1234,
+    "testArray": [],
+    "testObject": {}
+}
+----
+
+== Пример ответа
+[source,json]
+----
+201
+{
+    "status": "created"
+}
+----
+
+[source,json]
+----
+400
+{
+    "status": "bad request",
+    "params: ["testString"]
+}
+----
+
+[source,json]
+----
+403
+{
+    "status": "unauthorized"
+}
+----
+
+== Диаграмма последовательности
+xref:bank_sequence.mermaid [Диаграмма]
