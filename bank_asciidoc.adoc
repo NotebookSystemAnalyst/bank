@@ -137,5 +137,8 @@ curl --location --request POST /ru-external-api/client-fast-check' \
 }
 ----
 
+== JSONSchema
+xref:jsonSchema.json [JSONSchema]
+
 == Диаграмма последовательности
 xref:bank_sequence.mermaid [Диаграмма]
