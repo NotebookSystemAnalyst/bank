@@ -1,0 +1,34 @@
+@startuml
+
+actor Пользователь as u 
+participant Front as f 
+participant Back as b 
+database DB as db 
+|||
+skinparam SequenceMessageAlignment center
+autonumber 
+== Получение списка кинозалов кинотеатра ==
+|||
+
+u -> f ++ : **Нажата кнопка "Подробнее"**
+f -> b ++ : **GET /cinemas/{cinemaId}/halls**
+b -> b : **Валидация параметров**
+alt #LightGreen Параметры валидны
+    b -> db ++ : **SQL-запрос**
+    db --> b : **Данные**
+    b -> b : **Преобразовать данные** \n **в json**
+    b --> f : **200 OK (json)**
+    f --> u : **Отобразить результат**
+else #Red Параметры невалидны 
+    b --> f : **400 Bad Request**
+    f --> u : **Отобразить результат**
+else #Red Ничего не найдено
+    db --> b -- : **null**
+    b --> f : **404 Not Found**
+    f --> u : **Отобразить результат**
+else #Red Ошибка сервера
+    b --> f -- : **500 Internal Server Error**
+    f --> u  -- : **Отобразить результа**
+end
+|||
+@enduml
